@@ -13,6 +13,9 @@ gmail_sender
     GMailWorker     - Background worker to send messages asynchronously 
                       (uses multiprocessing module)
     GMailHandler    - GMail handler for logging framework
+    Message         - Wrapper around email.Message class simplifying
+                      creation of email message objects
 
-    The module also provides a cli interface if run directly (python -m gmail_handler.gmail)
+    The module also provides a cli interface to send email if run directly
+    (python -mgmail)
     
