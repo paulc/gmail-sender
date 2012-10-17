@@ -1,0 +1,7 @@
+venv
+*.swp
+*.pyc
+*~
+gmail_sender.egg-info
+build
+dist

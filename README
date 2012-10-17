@@ -1,0 +1,18 @@
+
+        
+gmail_sender
+------------
+
+    'gmail_sender' provides a simple wrapper around the smtplib/email modules to
+    provide an easy programmatic interface for sending email using the GMail SMTP 
+    service.
+
+    The module provides the following classes:
+
+    GMail           - Basic interface to GMail SMTP service 
+    GMailWorker     - Background worker to send messages asynchronously 
+                      (uses multiprocessing module)
+    GMailHandler    - GMail handler for logging framework
+
+    The module also provides a cli interface if run directly (python -m gmail_handler.gmail)
+    
