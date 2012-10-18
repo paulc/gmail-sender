@@ -17,12 +17,12 @@ from smtplib import SMTPResponseException,SMTPServerDisconnected
 version = "0.1"
 description = """
         
-    gmail_sender
-    ------------
+    gmail
+    -----
 
-    'gmail_sender' provides a simple wrapper around the smtplib/email modules to
-    provide an easy programmatic interface for sending email using the GMail SMTP 
-    service.
+    The 'gmail' module provides a simple wrapper around the smtplib/email
+    modules to provide an easy programmatic interface for sending email using
+    the GMail SMTP service.
 
     The module provides the following classes:
 
@@ -85,7 +85,7 @@ class GMail(object):
         # Default GMail SMTP address/port
         self.server = 'smtp.gmail.com'
         self.port = 587
-        # Parse address componet of username
+        # Parse address component of username
         self.username = parseaddr(username)[1]
         self.password = password
         self.sender = username
@@ -323,7 +323,7 @@ class Message(object):
                 # Just add plain text part
                 txt = MIMEText(text,'plain',self._charset(text))
                 self.root.attach(txt)
-            # Add attachments
+            # Add attachments
             for a in attachments or []:
                 self.root.attach(self._attachment(a))
         # Set headers

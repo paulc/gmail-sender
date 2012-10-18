@@ -17,7 +17,7 @@ class GenerateReadme(Command):
     def run(self):
         open("README","w").write(long_description)
 
-setup(name='gmail_sender',
+setup(name='gmail',
       version = version,
       description = 'Simple library to send email using GMail (includes background worker and logging classes)',
       long_description = long_description,
