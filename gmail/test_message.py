@@ -8,13 +8,15 @@ from message import Message
 class MessageTest(unittest.TestCase):
 
     def test_simple(self):
-        m = Message("Simple",to="xyz@xyz.com",text="text")
+        m = Message("Simple",to="xyz@xyz.com",cc="abc@abc.com",bcc="bcc@bcc.com",text="text")
         self.assertEqual(m.as_string().strip(),
                          dedent("""
                                     Content-Type: text/plain; charset="us-ascii"
                                     MIME-Version: 1.0
                                     Content-Transfer-Encoding: 7bit
                                     To: xyz@xyz.com
+                                    Cc: abc@abc.com
+                                    Bcc: bcc@bcc.com
                                     Subject: Simple
 
                                     text
