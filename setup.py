@@ -25,7 +25,7 @@ setup(name='gmail',
       author_email = 'paul.chakravarti@gmail.com',
       url = 'https://github.com/paulchakravarti/gmail-sender',
       cmdclass = { 'readme' : GenerateReadme },
-      py_modules = ['gmail'],
+      packages = ['gmail'],
       license = 'BSD',
       classifiers = [ "Topic :: Communications :: Email" ]
      )

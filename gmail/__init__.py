@@ -1,4 +1,9 @@
 
+from gmail import GMail,GMailWorker,GMailHandler
+from message import Message
+
+version = "0.1"
+description = """
         
     gmail
     -----
@@ -31,3 +36,5 @@
     Author:
 
         *   Paul Chakravarti (paul.chakravarti@gmail.com)
+"""
+

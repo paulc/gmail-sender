@@ -6,48 +6,8 @@ import os.path
 import smtplib
 import time
 
-from email.encoders import encode_base64
-from email.mime.base import MIMEBase
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
 from email.utils import formatdate,make_msgid,getaddresses,parseaddr
-from mimetypes import guess_type
 from smtplib import SMTPResponseException,SMTPServerDisconnected
-
-version = "0.1"
-description = """
-        
-    gmail
-    -----
-
-    The 'gmail' module provides a simple wrapper around the smtplib/email
-    modules to provide an easy programmatic interface for sending email using
-    the GMail SMTP service.
-
-    The module provides the following classes:
-
-    GMail           - Basic interface to GMail SMTP service 
-    GMailWorker     - Background worker to send messages asynchronously 
-                      (uses multiprocessing module)
-    GMailHandler    - GMail handler for logging framework
-    Message         - Wrapper around email.Message class simplifying
-                      creation of email message objects
-
-    The module also provides a cli interface to send email if run directly
-    (python -mgmail)
-    
-    Changelog:
-
-        *   0.1     2012-10-17  Initial Release
-
-    License:
-
-        *   BSD
-
-    Author:
-
-        *   Paul Chakravarti (paul.chakravarti@gmail.com)
-"""
 
 class GMail(object):
 
@@ -245,7 +205,7 @@ class GMailWorker(object):
     def __del__(self):
         self.quit()
 
-class GMmailHandler(logging.Handler):
+class GMailHandler(logging.Handler):
 
     def __init__(self,username,password,to,subject,bg=False):
         logging.Handler.__init__(self)
@@ -272,145 +232,3 @@ class GMmailHandler(logging.Handler):
         except:
             self.handleError(record)
         
-class Message(object):
-    """
-        Wrapper around email.Message class simplifying creation of simple email
-        message objects.
-
-        Allows most basic email messages types (including text, html &
-        attachments) to be created simply from constructor. More complex
-        messages should be created using the email.mime classes directly
-
-        Class wraps the email.Message class and delegates item/attr lookups
-        to the wrapped class (allows the object to be treated as a MIMEBase
-        instance even though it doesnt inherit from this)
-
-        Basic usage:
-
-        >>> msg = Message('Test Message',to='xyz@xyz.com',text="Hello",html="<b>Hello</b>",attachments=['img.jpg']) 
-
-    """
-
-    def __init__(self,subject,to,cc=None,bcc=None,text=None,html=None,attachments=None):
-        """
-            Create message object
-
-            subject         : Subject field
-            to              : To recipients (as string - eg. "A <a@xyz.com>, B <b@xyz.com>")
-            cc              : Cc recipients (same format as to)
-            bcc             : Bcc recipients (same format as to)
-            text            : Plain text body
-            html            : HTML body ('text' will be included as alternative)
-            attachments     : List of attachments - if the item is a subclass of MIMEBase
-                              this is inserted directly, otherwise it is assumed to be
-                              a filename and a MIME attachment craeted guessing the 
-                              content-type (for detailed control of the attachment 
-                              parameters create these separately)
-        """
-        if not html and not attachments:
-            # Simple plain text email
-            self.root = MIMEText(text,'plain',self._charset(text))
-        else:
-            # Multipart message
-            self.root = MIMEMultipart()
-            if html:
-                # Add html & plain text alernative parts
-                alt = MIMEMultipart('alternative')
-                alt.attach(MIMEText(text,'plain',self._charset(text)))
-                alt.attach(MIMEText(html,'html',self._charset(html)))
-                self.root.attach(alt)
-            else:
-                # Just add plain text part
-                txt = MIMEText(text,'plain',self._charset(text))
-                self.root.attach(txt)
-            # Add attachments
-            for a in attachments or []:
-                self.root.attach(self._attachment(a))
-        # Set headers
-        self.root['To'] = to
-        if cc: self.root['Cc'] = cc
-        if bcc: self.root['Bcc'] = bcc
-        self.root['Subject'] = subject
-
-    def _charset(self,s):
-        """
-            Guess charset - assume ascii for text and force utf-8 for unicode
-            (email.mime classes take care of encoding)
-        """
-        return 'utf-8' if isinstance(s,unicode) else 'us-ascii'
-
-    def _attachment(self,a):
-        """
-            Create MIME attachment
-        """
-        if isinstance(a,MIMEBase):
-            # Already MIME object - return
-            return a
-        else:
-            # Assume filename - guess mime-type from extension and return MIME object
-            main,sub = (guess_type(a) or ('application/octet-stream',''))[0].split('/',1)
-            attachment = MIMEBase(main,sub)
-            attachment.set_payload(file(a).read())
-            attachment.add_header('Content-Disposition','attachment',filename=os.path.basename(a))
-            encode_base64(attachment)
-            return attachment
-
-    # Delegate to root MIME object (allows object to be treated as MIMEBase)
-
-    def __getitem__(self,key):
-        return self.root.__getitem__(key)
-
-    def __setitem__(self,key,value):
-        self.root.__setitem__(key,value)
-
-    def __delitem__(self,key):
-        return self.root.__delitem__(key)
-
-    def __getattr__(self,attr):
-        return getattr(self.root,attr)
-
-def cli():
-    import argparse,getpass,mimetypes,sys
-
-    parser = argparse.ArgumentParser(description='Send email message via GMail account')
-    parser.add_argument('--username','-u',required=True,
-                                help='GMail Username')
-    parser.add_argument('--password','-p',default=None,
-                                help='GMail Password')
-    parser.add_argument('--to','-t',required=True,action='append',default=[],
-                                help='To (multiple allowed)')
-    parser.add_argument('--cc','-c',action='append',default=[],
-                                help='Cc (multiple allowed)')
-    parser.add_argument('--subject','-s',required=True,
-                                help='Subject')
-    parser.add_argument('--body','-b',
-                                help='Message Body (text)')
-    parser.add_argument('--html','-l',default=None,
-                                help='Message Body (html)')
-    parser.add_argument('--attachment','-a',action='append',default=[],
-                                help='Attachment (multiple allowed)')
-    parser.add_argument('--debug','-d',action='store_true',default=False,
-                                help='Debug')
-
-    results = parser.parse_args()
-
-    if results.password is None:
-        results.password = getpass.getpass("Password:")
-
-    if results.body is None and results.html is None:
-        results.body = sys.stdin.read()
-
-    gmail = GMail(username=results.username,
-                  password=results.password,
-                  debug=results.debug)
-    msg = Message(subject=results.subject,
-                  to=",".join(results.to),
-                  cc=",".join(results.cc),
-                  text=results.body,
-                  html=results.html,
-                  attachments=results.attachment)
-    gmail.send(msg)
-    gmail.close()
-
-if __name__ == '__main__':
-    cli()
