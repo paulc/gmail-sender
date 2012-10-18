@@ -2,7 +2,7 @@
 from gmail import GMail,GMailWorker,GMailHandler
 from message import Message
 
-version = "0.1"
+version = "0.2"
 description = """
         
     gmail

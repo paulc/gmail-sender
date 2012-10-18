@@ -1,4 +1,6 @@
 
+import os
+
 from email.encoders import encode_base64
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
