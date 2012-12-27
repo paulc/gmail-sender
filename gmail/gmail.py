@@ -9,6 +9,8 @@ import time
 from email.utils import formatdate,make_msgid,getaddresses,parseaddr
 from smtplib import SMTPResponseException,SMTPServerDisconnected
 
+from message import Message
+
 class GMail(object):
 
     """
@@ -71,6 +73,7 @@ class GMail(object):
 
             Send message
         """
+        print "!!!!!!!!!!!! SEND"
         # Check if connected and connect if false
         if not self.is_connected():
             self.connect()
@@ -171,6 +174,7 @@ class GMailWorker(object):
             while True:
                 try:
                     msg,rcpt = queue.get()
+                    print "+++",msg,rcpt
                     if msg == 'QUIT':
                         break
                     gmail.send(msg,rcpt)
@@ -207,25 +211,21 @@ class GMailWorker(object):
 
 class GMailHandler(logging.Handler):
 
-    def __init__(self,username,password,to,subject,bg=False):
+    def __init__(self,username,password,to,bg=False):
         logging.Handler.__init__(self)
         if bg:
             self.gmail= GMailWorker(username,password)
         else:
             self.gmail= GMail(username,password)
         self.to = to
-        self.subject = subject
-
-    def getSubject(self, record):
-        return record.levelname + " " + self.subject
-
-    def getText(self,record):
-        return str(record)
+        self.formatter = logging.Formatter('%(asctime)s [%(levelname)s] %(name)s: %(message)s')
+        self.subject_formatter = logging.Formatter('[%(levelname)s] %(message).60s')
 
     def emit(self,record):
         try:
-            msg = message(self.getSubject(record),to=self.toaddr,text=self.getText(record))
-            msg.body = record.levelname + " " + self.format(record)
+            msg = Message(subject=self.subject_formatter.format(record),
+                          to=self.to,
+                          text=self.format(record))
             self.gmail.send(msg)
         except (KeyboardInterrupt, SystemExit):
             raise
