@@ -83,7 +83,7 @@ class Message(object):
             return a
         else:
             # Assume filename - guess mime-type from extension and return MIME object
-            main,sub = (guess_type(a) or ('application/octet-stream',''))[0].split('/',1)
+            main,sub = (guess_type(a)[0] or 'application/octet-stream').split('/',1)
             attachment = MIMEBase(main,sub)
             attachment.set_payload(file(a).read())
             attachment.add_header('Content-Disposition','attachment',filename=os.path.basename(a))
