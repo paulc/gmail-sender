@@ -73,7 +73,6 @@ class GMail(object):
 
             Send message
         """
-        print "!!!!!!!!!!!! SEND"
         # Check if connected and connect if false
         if not self.is_connected():
             self.connect()
@@ -140,13 +139,17 @@ class GMailWorker(object):
         the multiprocessing module) which accepts messages through a 
         simple queue. No feedback is provided.
 
-        The object provides a similar api to the Gmail object
+        The worker object should be closed on exit (will otherwise prevent
+        the interpreter from exiting).
+
+        The object provides a similar api to the Gmail object.
 
         Basic usage:
 
         >>> gmail_worker = GMailWorker('A.User <user@gmail.com>','password')
         >>> msg = Message('Test Message',to='xyz <xyz@xyz.com',text='Hello')
         >>> gmail_worker.send(msg)
+        >>> gmail_worker.close()
 
     """
     def __init__(self,username,password,debug=False):
@@ -174,7 +177,6 @@ class GMailWorker(object):
             while True:
                 try:
                     msg,rcpt = queue.get()
-                    print "+++",msg,rcpt
                     if msg == 'QUIT':
                         break
                     gmail.send(msg,rcpt)
@@ -200,18 +202,34 @@ class GMailWorker(object):
         """
         self.queue.put((message,rcpt))
 
-    def quit(self):
+    def close(self):
         """
             Close down background worker
         """
         self.queue.put(('QUIT',None))
 
     def __del__(self):
-        self.quit()
+        self.close()
 
 class GMailHandler(logging.Handler):
+    """
+        GMailHandler provides a handler for the 'logging' framework. The 
+        handler should be setup/configured as a normal logging handler.
 
-    def __init__(self,username,password,to,bg=False):
+        The handler can either send messages in the foreground or background
+        (using GMailHandler). To avoid impacting application performance
+        it is normally run in the background (though this can be overridden).
+
+        The format of the log messages can be changed by setting a formatter
+        object as normal. In addition the Subject iformat can be specified
+        using the setSubjectFormatter() method.
+
+        >>> logger = logging.getLogger("GMailLogger")
+        >>> logger.setLevel(logging.DEBUG)
+        >>> gh = GMailHandler('A.User <user@gmail.com>','password','Log Recipient <xxx@yyy.zzz>')
+    """
+
+    def __init__(self,username,password,to,bg=True):
         logging.Handler.__init__(self)
         if bg:
             self.gmail= GMailWorker(username,password)
@@ -219,7 +237,10 @@ class GMailHandler(logging.Handler):
             self.gmail= GMail(username,password)
         self.to = to
         self.formatter = logging.Formatter('%(asctime)s [%(levelname)s] %(name)s: %(message)s')
-        self.subject_formatter = logging.Formatter('[%(levelname)s] %(message).60s')
+        self.subject_formatter = logging.Formatter('[%(levelname)s] %(message).40s')
+
+    def setSubjectFormatter(self,f):
+        self.subject_formatter = f
 
     def emit(self,record):
         try:
@@ -231,4 +252,9 @@ class GMailHandler(logging.Handler):
             raise
         except:
             self.handleError(record)
-        
+
+    def close(self):
+        self.gmail.close()
+
+    def __del__(self):
+        self.close()

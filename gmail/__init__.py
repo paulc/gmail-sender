@@ -2,7 +2,7 @@
 from gmail import GMail,GMailWorker,GMailHandler
 from message import Message
 
-version = "0.2"
+version = "0.3"
 description = """
         
     gmail
@@ -28,6 +28,7 @@ description = """
 
         *   0.1     2012-10-17  Initial Release
         *   0.2     2012-10-18  Restructure module
+        *   0.3     2012-12-28  Fix logging/worker 
 
     License:
 

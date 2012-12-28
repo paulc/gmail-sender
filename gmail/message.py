@@ -102,6 +102,6 @@ class Message(object):
         return self.root.__delitem__(key)
 
     def __getattr__(self,attr):
-        print "===",attr
-        return getattr(self.root,attr)
+        if attr != 'root':
+            return getattr(self.root,attr)
 

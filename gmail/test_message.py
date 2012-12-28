@@ -47,7 +47,6 @@ class MessageTest(unittest.TestCase):
                           ['multipart/mixed','multipart/alternative','text/plain',
                               'text/html','application/unknown','text/x-python'])
 
-
 if __name__ == '__main__':
     unittest.main()
     
