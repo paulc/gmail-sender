@@ -22,11 +22,12 @@ class Message(object):
 
         Basic usage:
 
-        >>> msg = Message('Test Message',to='xyz@xyz.com',text="Hello",html="<b>Hello</b>",attachments=['img.jpg']) 
+        >>> msg = Message('Test Message',to='xyz@xyz.com',text="Hello",html="<b>Hello</b>",attachments=['img.jpg'])
 
     """
 
-    def __init__(self,subject,to,cc=None,bcc=None,text=None,html=None,attachments=None):
+    def __init__(self,subject,to,cc=None,bcc=None,text=None,html=None,
+                 attachments=None, sender=None, reply_to=None):
         """
             Create message object
 
@@ -38,9 +39,13 @@ class Message(object):
             html            : HTML body ('text' will be included as alternative)
             attachments     : List of attachments - if the item is a subclass of MIMEBase
                               this is inserted directly, otherwise it is assumed to be
-                              a filename and a MIME attachment craeted guessing the 
-                              content-type (for detailed control of the attachment 
+                              a filename and a MIME attachment craeted guessing the
+                              content-type (for detailed control of the attachment
                               parameters create these separately)
+            sender          : Value for the 'From' header (e.g. Foo Barr <info@example.com>).
+                              If specified, 'Reply-To' header is also set to this address.
+            reply_to        : Value for the 'Reply-To' header.
+
         """
         if not html and not attachments:
             # Simple plain text email
@@ -65,6 +70,17 @@ class Message(object):
         self.root['To'] = to
         if cc: self.root['Cc'] = cc
         if bcc: self.root['Bcc'] = bcc
+
+        if sender:
+            self.root['From'] = sender
+
+            if not reply_to:
+                # If 'Reply-To' is not provided, set it to the 'From' value
+                self.root['Reply-To'] = sender
+
+        if reply_to:
+            self.root['Reply-To'] = reply_to
+
         self.root['Subject'] = subject
 
     def _charset(self,s):
