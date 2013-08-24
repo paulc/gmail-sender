@@ -30,6 +30,8 @@ description = """
         *   0.2     2012-10-18  Restructure module
         *   0.3     2012-12-28  Fix logging/worker 
         *   0.3.1   2012-12-28  CLI attachment mime-type fix
+        *   0.4     2013-08-24  Allow user to specify 'From' and 'Reply-To' header by passing 'sender'
+                                (Pull from from https://github.com/Kami - thanks)
 
     License:
 
