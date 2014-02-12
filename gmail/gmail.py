@@ -7,7 +7,7 @@ import smtplib
 import time
 
 from email.utils import formatdate,make_msgid,getaddresses,parseaddr
-from smtplib import SMTPResponseException,SMTPServerDisconnected
+from smtplib import SMTPResponseException,SMTPServerDisconnected,SMTPAuthenticationError
 
 from message import Message
 
@@ -63,7 +63,14 @@ class GMail(object):
         self.session.ehlo()
         self.session.starttls()
         self.session.ehlo()
-        self.session.login(self.username,self.password)
+        try:
+            self.session.login(self.username,self.password)
+        except SMTPAuthenticationError,e:
+            # Catch redirect to account unlock & reformat
+            if e.smtp_error.startswith("5.7.14"):
+                resp = e.smtp_error.replace("\n5.7.14 ","") + (" :: Google account locked -- try https://accounts.google.com/DisplayUnlockCaptcha")
+                raise SMTPAuthenticationError(e.smtp_code,resp)
+            raise
 
     def send(self,message,rcpt=None):
         """
@@ -130,6 +137,24 @@ class GMail(object):
         """
         self.close()
 
+def _gmail_worker(username,password,queue,debug=False):
+    gmail = GMail(username,password,debug)
+    gmail.connect()
+    while True:
+        try:
+            msg,rcpt = queue.get()
+            if msg == 'QUIT':
+                break
+            gmail.send(msg,rcpt)
+        except SMTPServerDisconnected:
+            gmail.connect()
+            gmail.send(msg,rcpt)
+        except SMTPResponseException:
+            pass
+        except KeyboardInterrupt:
+            break
+    gmail.close()
+
 class GMailWorker(object):
 
     """
@@ -171,23 +196,6 @@ class GMailWorker(object):
             '_gmail_worker' loops listening for new message objects on the
             shared queue and sends these using the GMail SMTP connection.
         """
-        def _gmail_worker(username,password,queue,debug=False):
-            gmail = GMail(username,password,debug)
-            gmail.connect()
-            while True:
-                try:
-                    msg,rcpt = queue.get()
-                    if msg == 'QUIT':
-                        break
-                    gmail.send(msg,rcpt)
-                except SMTPServerDisconnected:
-                    gmail.connect()
-                    gmail.send(msg,rcpt)
-                except SMTPResponseException:
-                    pass
-                except KeyboardInterrupt:
-                    break
-            gmail.close()
         self.queue = multiprocessing.queues.SimpleQueue()
         self.worker = multiprocessing.Process(target=_gmail_worker,args=(username,password,self.queue,debug))
         self.worker.start()

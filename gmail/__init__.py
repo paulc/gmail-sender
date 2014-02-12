@@ -2,7 +2,7 @@
 from gmail import GMail,GMailWorker,GMailHandler
 from message import Message
 
-version = "0.4"
+version = "0.5"
 description = """
         
     gmail
@@ -32,6 +32,9 @@ description = """
         *   0.3.1   2012-12-28  CLI attachment mime-type fix
         *   0.4     2013-08-24  Allow user to specify 'From' and 'Reply-To' header by passing 'sender'
                                 (Pull from from https://github.com/Kami - thanks)
+        *   0.5     2014-02-12  Move _gmail_worker to module function to fix 
+                                multiprocessor problem on win32 
+                                (Fix from gabriel.nevarez@gmail.com - thanks)
 
     License:
 
