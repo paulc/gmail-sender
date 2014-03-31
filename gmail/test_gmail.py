@@ -2,7 +2,7 @@
 import logging,os,unittest
 
 from gmail import GMail,GMailWorker,GMailHandler
-from message import Message
+from gmail.message import Message
 
 class GMailTest(unittest.TestCase):
 
