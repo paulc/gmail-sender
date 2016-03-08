@@ -19,7 +19,7 @@ class GMail(object):
         Basic usage:
 
         >>> gmail = GMail('A.User <user@gmail.com>','password')
-        >>> msg = Message('Test Message',to='xyz <xyz@xyz.com',text='Hello')
+        >>> msg = Message('Test Message',to='xyz <xyz@xyz.com>',text='Hello')
         >>> gmail.send(msg)
 
     """
