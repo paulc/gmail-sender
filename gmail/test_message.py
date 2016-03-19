@@ -3,7 +3,7 @@ import unittest
 from email.mime.base import MIMEBase
 from textwrap import dedent
 
-from message import Message
+from .message import Message
 
 class MessageTest(unittest.TestCase):
 
@@ -23,7 +23,7 @@ class MessageTest(unittest.TestCase):
                                 """).strip())
 
     def test_unicode(self):
-        m = Message(u"Unicod\xe9",to="xyz@xyz.com",text=u"Hello \xf8\xf9\xfa")
+        m = Message("Unicod\xe9",to="xyz@xyz.com",text="Hello \xf8\xf9\xfa")
         self.assertEqual(m.as_string().strip(),
                          dedent("""
                                      Content-Type: text/plain; charset="utf-8"
@@ -36,12 +36,12 @@ class MessageTest(unittest.TestCase):
                                 """).strip())
 
     def test_html(self):
-         m = Message(u"HTML",to="xyz@xyz.com",text="text",html="html")
+         m = Message("HTML",to="xyz@xyz.com",text="text",html="html")
          self.assertEqual([ p.get_content_type() for p in m.walk() ],
                           ['multipart/mixed','multipart/alternative','text/plain','text/html'])
 
     def test_attachment(self):
-         m = Message(u"Attachment",to="xyz@xyz.com",text="text",html="html",
+         m = Message("Attachment",to="xyz@xyz.com",text="text",html="html",
                            attachments=[MIMEBase('application','unknown'),'test_message.py'])
          self.assertEqual([ p.get_content_type() for p in m.walk() ],
                           ['multipart/mixed','multipart/alternative','text/plain',

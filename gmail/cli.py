@@ -1,6 +1,6 @@
 
-from gmail import GMail
-from message import Message
+from .gmail import GMail
+from .message import Message
 
 def cli():
     import argparse,getpass,mimetypes,sys

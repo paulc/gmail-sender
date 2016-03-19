@@ -88,7 +88,7 @@ class Message(object):
             Guess charset - assume ascii for text and force utf-8 for unicode
             (email.mime classes take care of encoding)
         """
-        return 'utf-8' if isinstance(s,unicode) else 'us-ascii'
+        return 'utf-8' if isinstance(s,str) else 'us-ascii'
 
     def _attachment(self,a):
         """

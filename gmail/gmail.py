@@ -9,7 +9,7 @@ import time
 from email.utils import formatdate,make_msgid,getaddresses,parseaddr
 from smtplib import SMTPResponseException,SMTPServerDisconnected,SMTPAuthenticationError
 
-from message import Message
+from .message import Message
 
 class GMail(object):
 
@@ -65,7 +65,7 @@ class GMail(object):
         self.session.ehlo()
         try:
             self.session.login(self.username,self.password)
-        except SMTPAuthenticationError,e:
+        except SMTPAuthenticationError as e:
             # Catch redirect to account unlock & reformat
             if e.smtp_error.startswith("5.7.14"):
                 resp = e.smtp_error.replace("\n5.7.14 ","") + (" :: Google account locked -- try https://accounts.google.com/DisplayUnlockCaptcha")

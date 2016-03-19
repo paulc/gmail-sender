@@ -1,8 +1,8 @@
 
 import logging,os,unittest
 
-from gmail import GMail,GMailWorker,GMailHandler
-from message import Message
+from .gmail import GMail,GMailWorker,GMailHandler
+from .message import Message
 
 class GMailTest(unittest.TestCase):
 
@@ -51,7 +51,7 @@ class GMailTest(unittest.TestCase):
 
         try:
             1/0
-        except Exception,e:
+        except Exception as e:
             logger.exception(e)
 
         gh.close()
