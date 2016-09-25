@@ -1,11 +1,19 @@
 
-import os
+from __future__ import print_function
+from __future__ import unicode_literals
+
+import os,sys
 
 from email.encoders import encode_base64
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from mimetypes import guess_type
+
+if sys.version_info[0] == 2:
+    unicode_type = unicode
+else:
+    unicode_type = str
 
 class Message(object):
     """
@@ -88,7 +96,7 @@ class Message(object):
             Guess charset - assume ascii for text and force utf-8 for unicode
             (email.mime classes take care of encoding)
         """
-        return 'utf-8' if isinstance(s,unicode) else 'us-ascii'
+        return 'utf-8' if isinstance(s,unicode_type) else 'us-ascii'
 
     def _attachment(self,a):
         """
@@ -101,7 +109,8 @@ class Message(object):
             # Assume filename - guess mime-type from extension and return MIME object
             main,sub = (guess_type(a)[0] or 'application/octet-stream').split('/',1)
             attachment = MIMEBase(main,sub)
-            attachment.set_payload(file(a).read())
+            with open(a,'rb') as f:
+                attachment.set_payload(f.read())
             attachment.add_header('Content-Disposition','attachment',filename=os.path.basename(a))
             encode_base64(attachment)
             return attachment

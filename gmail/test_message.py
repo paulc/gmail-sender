@@ -1,14 +1,17 @@
 
-import unittest
+from __future__ import print_function
+from __future__ import unicode_literals
+
+import os,unittest
 from email.mime.base import MIMEBase
 from textwrap import dedent
 
-from gmail.message import Message
+from .gmail import Message
 
 class MessageTest(unittest.TestCase):
 
     def test_simple(self):
-        m = Message("Simple",to="xyz@xyz.com",cc="abc@abc.com",bcc="bcc@bcc.com",text="text")
+        m = Message("Simple",to="xyz@xyz.com",cc="abc@abc.com",bcc="bcc@bcc.com",text=b"text")
         self.assertEqual(m.as_string().strip(),
                          dedent("""
                                     Content-Type: text/plain; charset="us-ascii"
@@ -42,7 +45,7 @@ class MessageTest(unittest.TestCase):
 
     def test_attachment(self):
          m = Message(u"Attachment",to="xyz@xyz.com",text="text",html="html",
-                           attachments=[MIMEBase('application','unknown'),'test_message.py'])
+                           attachments=[MIMEBase('application','unknown'),os.path.abspath(__file__)])
          self.assertEqual([ p.get_content_type() for p in m.walk() ],
                           ['multipart/mixed','multipart/alternative','text/plain',
                               'text/html','application/unknown','text/x-python'])

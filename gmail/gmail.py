@@ -1,7 +1,13 @@
 
+from __future__ import print_function
+from __future__ import unicode_literals
+
 import logging
-import multiprocessing
-import multiprocessing.queues
+from multiprocessing import Process
+try:
+    from multiprocessing import SimpleQueue
+except ImportError:
+    from multiprocessing.queues import SimpleQueue
 import os.path
 import smtplib
 import time
@@ -9,7 +15,7 @@ import time
 from email.utils import formatdate,make_msgid,getaddresses,parseaddr
 from smtplib import SMTPResponseException,SMTPServerDisconnected,SMTPAuthenticationError
 
-from message import Message
+from .message import Message
 
 class GMail(object):
 
@@ -65,7 +71,7 @@ class GMail(object):
         self.session.ehlo()
         try:
             self.session.login(self.username,self.password)
-        except SMTPAuthenticationError,e:
+        except SMTPAuthenticationError as e:
             # Catch redirect to account unlock & reformat
             if e.smtp_error.startswith("5.7.14"):
                 resp = e.smtp_error.replace("\n5.7.14 ","") + (" :: Google account locked -- try https://accounts.google.com/DisplayUnlockCaptcha")
@@ -196,8 +202,8 @@ class GMailWorker(object):
             '_gmail_worker' loops listening for new message objects on the
             shared queue and sends these using the GMail SMTP connection.
         """
-        self.queue = multiprocessing.queues.SimpleQueue()
-        self.worker = multiprocessing.Process(target=_gmail_worker,args=(username,password,self.queue,debug))
+        self.queue = SimpleQueue()
+        self.worker = Process(target=_gmail_worker,args=(username,password,self.queue,debug))
         self.worker.start()
 
     def send(self,message,rcpt=None):
@@ -252,7 +258,7 @@ class GMailHandler(logging.Handler):
 
     def emit(self,record):
         try:
-            msg = Message(subject=self.subject_formatter.format(record),
+            msg = Message(subject=self.subject_formatter.format(record).split("\n")[0],
                           to=self.to,
                           text=self.format(record))
             self.gmail.send(msg)

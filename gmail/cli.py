@@ -1,6 +1,9 @@
 
-from gmail import GMail
-from message import Message
+from __future__ import print_function
+from __future__ import unicode_literals
+
+from .gmail import GMail
+from .message import Message
 
 def cli():
     import argparse,getpass,mimetypes,sys
