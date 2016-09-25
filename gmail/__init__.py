@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 from .gmail import GMail,GMailWorker,GMailHandler
 from .message import Message
 
-version = "0.5"
+version = "0.6"
 description = """
         
     gmail
@@ -27,6 +27,14 @@ description = """
     The module also provides a cli interface to send email if run directly
     (python -mgmail.cli)
     
+    Basic usage:
+
+    >>> gmail = GMail('A.User <user@gmail.com>','password')
+    >>> msg = Message('Test Message',to='xyz <xyz@xyz.com>',text='Hello')
+    >>> gmail.send(msg)
+
+    For examples of use see cli.py and test_gmail.py/test_message.py
+
     Changelog:
 
         *   0.1     2012-10-17  Initial Release
@@ -38,6 +46,7 @@ description = """
         *   0.5     2014-02-12  Move _gmail_worker to module function to fix 
                                 multiprocessor problem on win32 
                                 (Fix from gabriel.nevarez@gmail.com - thanks)
+        *   0.6     2016-09-25  Python 3 support
 
     License:
 

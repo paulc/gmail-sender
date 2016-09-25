@@ -27,5 +27,8 @@ setup(name='gmail',
       cmdclass = { 'readme' : GenerateReadme },
       packages = ['gmail'],
       license = 'BSD',
-      classifiers = [ "Topic :: Communications :: Email" ]
+      classifiers = [ "Topic :: Communications :: Email",
+                      "Programming Language :: Python :: 2",
+                      "Programming Language :: Python :: 3",
+                      ],
      )
