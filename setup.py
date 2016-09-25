@@ -19,7 +19,7 @@ class GenerateReadme(Command):
 
 setup(name='gmail',
       version = version,
-      description = 'Simple library to send email using GMail (includes background worker and logging classes)',
+      description = 'Simple library to send email using GMail (includes background worker and logging classes) [Python 2/3 support]',
       long_description = long_description,
       author = 'Paul Chakravarti',
       author_email = 'paul.chakravarti@gmail.com',
