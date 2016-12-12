@@ -69,14 +69,7 @@ class GMail(object):
         self.session.ehlo()
         self.session.starttls()
         self.session.ehlo()
-        try:
-            self.session.login(self.username,self.password)
-        except SMTPAuthenticationError as e:
-            # Catch redirect to account unlock & reformat
-            if e.smtp_error.startswith("5.7.14"):
-                resp = e.smtp_error.replace("\n5.7.14 ","") + (" :: Google account locked -- try https://accounts.google.com/DisplayUnlockCaptcha")
-                raise SMTPAuthenticationError(e.smtp_code,resp)
-            raise
+        self.session.login(self.username,self.password)
 
     def send(self,message,rcpt=None):
         """

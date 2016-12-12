@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 from .gmail import GMail,GMailWorker,GMailHandler
 from .message import Message
 
-version = "0.6.1"
+version = "0.6.2"
 description = """
         
     gmail
@@ -33,16 +33,19 @@ description = """
     >>> msg = Message('Test Message',to='xyz <xyz@xyz.com>',text='Hello')
     >>> gmail.send(msg)
 
+    Note: You will need to setup an application-specific password rather
+          than using your account-password - see:
+          
+            https://support.google.com/mail/?p=InvalidSecondFactor
+            https://security.google.com/settings/security/apppasswords
+
     The Message class also provides support to simply generate html email and
     add attachments.
 
     >>> msg = Message('Test Message',to='xyz@xyz.com',text="Hello",html="<b>Hello</b>",attachments=['img.jpg'])
 
-    In Python3 messages will be unicode (utf8) encoded by default unless the text is 
-    passed a a bytes object (the inverse is true in Python 2)
-
-    (Note: you should generate an app password rather than using your account password
-           https://security.google.com/settings/security/apppasswords)
+    In Python3 messages will be unicode (utf8) encoded by default unless the
+    text is passed a a bytes object (the inverse is true in Python 2)
 
     For examples of use see cli.py and test_gmail.py/test_message.py
 
@@ -57,7 +60,8 @@ description = """
         *   0.5     2014-02-12  Move _gmail_worker to module function to fix 
                                 multiprocessor problem on win32 
                                 (Fix from gabriel.nevarez@gmail.com - thanks)
-        *   0.6     2016-09-25  Python 3 support
+        *   0.6.1   2016-09-25  Python 3 support
+        *   0.6.2   2016-12-12  Fix to Python 3 exception handling
 
     License:
 
