@@ -2,6 +2,8 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import os 
+
 from .gmail import GMail
 from .message import Message
 
@@ -9,10 +11,10 @@ def cli():
     import argparse,getpass,mimetypes,sys
 
     parser = argparse.ArgumentParser(description='Send email message via GMail account')
-    parser.add_argument('--username','-u',required=True,
-                                help='GMail Username')
-    parser.add_argument('--password','-p',default=None,
-                                help='GMail Password')
+    parser.add_argument('--username','-u',default=os.environ.get('GMAIL_ACCOUNT'),
+                                help='GMail Username (Default: $GMAIL_ACCOUNT)')
+    parser.add_argument('--password','-p',default=os.environ.get('GMAIL_PASSWD'),
+                                help='GMail Password (Default: $GMAIL_PASSWD)')
     parser.add_argument('--to','-t',required=True,action='append',default=[],
                                 help='To (multiple allowed)')
     parser.add_argument('--cc','-c',action='append',default=[],

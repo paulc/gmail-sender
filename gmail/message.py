@@ -111,7 +111,13 @@ class Message(object):
             attachment = MIMEBase(main,sub)
             with open(a,'rb') as f:
                 attachment.set_payload(f.read())
-            attachment.add_header('Content-Disposition','attachment',filename=os.path.basename(a))
+            if sys.version_info[0] == 2:
+                # Try to handle non-ascii filenames
+                attachment.add_header('Content-Disposition','attachment',
+                        filename=unicode(os.path.basename(a),sys.getfilesystemencoding()))
+            else:
+                attachment.add_header('Content-Disposition','attachment',
+                        filename=os.path.basename(a))
             encode_base64(attachment)
             return attachment
 
