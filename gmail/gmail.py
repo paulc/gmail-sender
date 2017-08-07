@@ -126,7 +126,7 @@ class GMail(object):
         """
             Close SMTP connection
         """
-        if self.session:
+        if self.is_connected():
             self.session.quit()
             self.session = None
 
