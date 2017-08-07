@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 from .gmail import GMail,GMailWorker,GMailHandler
 from .message import Message
 
-version = "0.6.2"
+version = "0.6.3"
 description = """
         
     gmail
@@ -62,6 +62,9 @@ description = """
                                 (Fix from gabriel.nevarez@gmail.com - thanks)
         *   0.6.1   2016-09-25  Python 3 support
         *   0.6.2   2016-12-12  Fix to Python 3 exception handling
+        *   0.6.3   2017-08-07  Try to handle non-ascii filenames
+                                Fix for exception on `__del__` Method Invocation
+                                (thanks to https://github.com/theonewolf for fix/pull request)
 
     License:
 
